@@ -211,7 +211,7 @@ def main():
     
     # Declarations
     n_players = 5
-    board_file = '/Users/jmcontreras/GitHub/monopoly/board.csv'
+    board_file = 'board.csv'
     
     # Get players and board (including properties)
     players = get_players(n_players)

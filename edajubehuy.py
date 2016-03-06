@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # This is a similar program created by another programmer, retrieved from http://hastebin.com/edajubehuy.py.
 
 import random
@@ -31,7 +33,7 @@ import sys
 # some notes on computer AI:
 #   - if computer characters land on a property of the same type (color, utility, or railroad) as something they own, they buy if they have enough money
 #   - otherwise, they will purchase new properties 50% of the time (using random)
-#   - AI will attempt to get out of jail the moment they have enough recources to get out (50$ or get out of jail free cards), trying for double rolls otherwise
+#   - AI will attempt to get out of jail the moment they have enough recources to get out (£50 or get out of jail free cards), trying for double rolls otherwise
 #   - AI will buy houses on monopolies (more valuable monopolies as priority) the moment they have enough money to do so, buying as many as possible
 
 
@@ -218,11 +220,19 @@ class Player:
                break
 
 
-   def buyhouse(self,modprop):
+   def buyhouse(self,modprop,n):
       for colorlist in self.proplist:
          for prop in colorlist:
             if modprop.name == prop.name:
-               prop.houses += 1
+                if self.money>(n*prop.housecost):
+                    prop.houses += n
+                    self.money -= n*prop.housecost
+               
+   def sellhouse(self,modprop):
+      for colorlist in self.proplist:
+         for prop in colorlist:
+            if modprop.name == prop.name:
+               prop.houses -= 1
 
    def mortgageprop(self,modprop):
       self.money += modprop.mortgage
@@ -357,7 +367,7 @@ class Board:
 
       self.cclist = []
 
-      ccdesc1 = "GRAND OPERA OPENING. COLLECT $50 FROM EVERY PLAYER"
+      ccdesc1 = "GRAND OPERA OPENING. COLLECT £50 FROM EVERY PLAYER"
       c1 = CommunityChestCard(ccdesc1,0,0,0,0,0,0,50)
       self.cclist.append(c1)
       ccdesc2 = "RECEIVE FOR SERVICES £25"
@@ -367,7 +377,7 @@ class Board:
       c3 = CommunityChestCard(ccdesc3,1,0,0,0,0,0,0)
       self.cclist.append(c3)
       ccdesc4 = "PAY HOSPITAL £100 "
-      c4 = CommunityChestCard(ccdesc3,0,0,100,0,0,0,0)
+      c4 = CommunityChestCard(ccdesc4,0,0,100,0,0,0,0)
       self.cclist.append(c4)
       ccdesc5 = "DOCTOR'S FEE. PAY £50 "
       c5 = CommunityChestCard(ccdesc5,0,0,50,0,0,0,0)
@@ -498,12 +508,12 @@ class Board:
             newspot = int(movenum)
             if player.boardpos > newspot:
                player.money += int(200)
-               print(player.piece + " has passed go and collects $200.")
+               print(player.piece + " has passed go and collects £200.")
             player.boardpos = newspot
          if newspot > 39:
             newspot += -39
             player.money += int(200)
-            print(player.piece + " has passed go and collects $200.")
+            print(player.piece + " has passed go and collects £200.")
          player.boardpos = newspot
          for space in self.boardlist:
             if self.boardlist.index(space) == player.boardpos:
@@ -525,24 +535,24 @@ class Board:
                            if prop.color == currspace.color:           # PROBLEM, prop.color is appearently a string...
                               if player.money >= currspace.cost:
                                  player.addproperty(currspace)
-                                 print(str(player.piece) + " has purchased " + str(currspace.name) + " for $" + str(currspace.cost) + ".")
+                                 print(str(player.piece) + " has purchased " + str(currspace.name) + " for £" + str(currspace.cost) + ".")
                                  break
                   if currspace.owner == "bank":
                      if player.money >= currspace.cost:
                         buychoice = random.randint(0,1)
                         if buychoice == 1:
                            player.addproperty(currspace)
-                           print(str(player.piece) + " has purchased " + str(currspace.name) + " for $" + str(currspace.cost) + ".")
+                           print(str(player.piece) + " has purchased " + str(currspace.name) + " for £" + str(currspace.cost) + ".")
                if player.user == 1:
                   if player.money >= currspace.cost:                 # if user
                      buywhile = 0
                      while buywhile == 0:
-                        choice = input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
-                        if choice == "Y":
+                        choice = raw_input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
+                        if choice in ["Y", "y"]:
                            player.addproperty(currspace)
-                           print("You have purchased " + str(currspace.name) + " for $" + str(currspace.cost) + ".")
+                           print("You have purchased " + str(currspace.name) + " for £" + str(currspace.cost) + ".")
                            buywhile = 1
-                        if choice == "N":
+                        if choice in ["N", "n"]:
                            buywhile = 1
                         else:
                            print("Invalid input. Available answers are Y (yes) or N (no).")   #PROBLEM
@@ -605,20 +615,20 @@ class Board:
                   if player.user == 0:                                 # if computer
                      if len(player.raillist) >= 1:
                         player.addproperty(currspace)
-                        print(player.piece + " has purchased " + currspace.name + " for $" + str(currspace.cost) + ".")
+                        print(player.piece + " has purchased " + currspace.name + " for £" + str(currspace.cost) + ".")
                      else:
                         buychoice = random.randint(0,1)
                         if buychoice == 1:
                            player.addproperty(currspace)
-                           print(player.piece + " has purchased " + str(currspace.name) + " for $" + str(currspace.cost) + ".")         
+                           print(player.piece + " has purchased " + str(currspace.name) + " for £" + str(currspace.cost) + ".")         
                   else:
                      railwhile = 0
                      while railwhile == 0:
-                        choice = input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
-                        if choice == "Y":
+                        choice = raw_input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
+                        if choice in ["Y", "y"]:
                            player.addproperty(currspace)
                            railwhile = 1
-                        elif choice == "N":
+                        elif choice in ["N", "n"]:
                            railwhile = 1
                         else:
                            print("Invalid input. Available answers are Y (yes) or N (no).")
@@ -654,20 +664,20 @@ class Board:
                   if player.user == 0:                                 # if computer
                      if len(player.utlist) >= 1:
                         player.addproperty(currspace)
-                        print(player.piece + " has purchased " + currspace.name + " for $" + str(currspace.cost) + ".")
+                        print(player.piece + " has purchased " + currspace.name + " for £" + str(currspace.cost) + ".")
                      else:
                         buychoice = random.randint(0,1)
                         if buychoice == 1:
                            player.addproperty(currspace)
-                           print(player.piece + " has purchased " + currspace.name + " for $" + str(currspace.cost) + ".")          
+                           print(player.piece + " has purchased " + currspace.name + " for £" + str(currspace.cost) + ".")          
                   elif player.user == 1:
                      utwhile = 0
                      while utwhile == 0:
-                        choice = input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
-                        if choice == "Y":
+                        choice = raw_input("NOBODY OWNS " + str(currspace.name) + ". WOULD YOU LIKE TO BUY IT? TYPE Y OR N.")
+                        if choice in ["Y", "y"]:
                            player.addproperty(currspace)
                            utwhile = 1
-                        elif choice == "N":
+                        elif choice in ["N", "n"]:
                            utwhile = 1
                         else:
                            print("Invalid input. Available answers are Y (yes) or N (no).")
@@ -742,7 +752,7 @@ class Board:
                         player.money += 50
                      else:
                         player.money += i.money
-                        print(i.piece + " has insufficient funds to pay the $50, and loses the game.")
+                        print(i.piece + " has insufficient funds to pay the £50, and loses the game.")
                         self.playerlose(i)
 
 
@@ -806,23 +816,23 @@ class Board:
             if player.jailcards >= 0:
                jcwhile == 0
                while jcwhile == 0:
-                  usejc = input("Do you want to use a jailcard to get out? Type Y or N.")
-                  if usejc == "Y":
+                  usejc = raw_input("Do you want to use a jailcard to get out? Type Y or N: ")
+                  if usejc in ["Y", "y"]:
                      player.jailcards += -1
                      player.jailtime = 0
                      jcwhile = 1
-                  elif usejc == "N":
+                  elif usejc in ["N", "n"]:
                      jcwhile = 1
                   else:
-                     print("invalid input. Available answers are YES or NO (make sure caps is on).")
+                     print("invalid input. Available answers are YES or NO.")
 
             if player.money >= 50:
                jailpaywhile = 0
                while jailpaywhile == 0:
-                  jailpay = input("Do you want to pay $50 to get out of jail? Type Y or N.")
-                  if jailpay == "N":
+                  jailpay = raw_input("Do you want to pay £50 to get out of jail? Type Y or N: ")
+                  if jailpay in ["N", "n"]:
                      jailpaywhile = 1
-                  if jailroll == "Y":
+                  if jailpay in ["Y", "y"]:
                      player.money += -50
                      player.jailtime = 0
                   else:
@@ -830,10 +840,10 @@ class Board:
 
             jailrollwhile = 0
             while jailrollwhile == 0:
-               jailroll = input("Do you want to try to roll doubles to get out of jail? Type Y or N.")
-               if jailroll == "N":
+               jailroll = raw_input("Do you want to try to roll doubles to get out of jail? Type Y or N: ")
+               if jailroll in ["N", "n"]:
                   jailrollwhile = 1
-               if jailroll == "Y":
+               if jailroll in ["Y", "y"]:
                   die1 = random.randint(1,6)
                   die2 = random.randint(1,6)
                   print("die 1 roll: " + str(die1))
@@ -844,7 +854,7 @@ class Board:
                   else:
                      jailrollwhile = 1
                else:
-                  print("invalid input. Available answers are YES or NO (make sure caps is on).")
+                  print("invalid input. Available answers are YES or NO.")
                   
 
 
@@ -852,26 +862,40 @@ class Board:
          if "monopoly" in colorlist:
             for property in colorlist:
                if isinstance(property,Property):
-                  if property.houses < 5:
-                     housewhile = 0
-                     while housewhile == 0:
-                        if property.houses == 5:
-                           housewhile = 1
-                        elif player.money >= property.housecost:
-                           if player.user == 0:
-                              player.money += -property.housecost
-                              property.houses += 1
-                           if player.user == 1:
-                              buyhouseyn = input("Do you want to buy a house on " + property.name + "? Type Y or N.")
-                              if buyhouseyn == "N":
-                                 housewhile = 1
-                              elif buyhouseyn == "Y":
-                                 player.money += -property.housecost
-                                 property.houses += 1
-                              else:
-                                 print("invalid input. Available answers are YES or NO (make sure caps is on).")      
-                        else:
-                           housewhile = 1
+                  if player.user == 0:
+                     player.buyhouse(self, Property, 1)
+                  if player.user == 1:
+                     print(property.name + " has " + str(property.houses) + " houses.")
+                     numOfHouses = input("How many more houses would you like to buy? ")
+                     if numOfHouses>0:
+                         player.buyhouse(Property, numOfHouses)
+                     elif numOfHouses==0:
+                         print("") # do nothing
+                     else:
+                         print("invalid input. Available answers are YES or NO (make sure caps is on).")      
+                  
+                  
+#                  if property.houses < 5:
+#                     housewhile = 0
+#                     while housewhile == 0:
+#                        if property.houses == 5:
+#                           housewhile = 1
+#                        elif player.money >= property.housecost:
+#                           if player.user == 0:
+#                              player.money += -property.housecost
+#                              property.houses += 1
+#                           if player.user == 1:
+#                              print(property.name + " has " + str(property.houses) + " houses.")
+#                              buyhouseyn = raw_input("Do you want to buy another? Y or N: ")
+#                              if buyhouseyn in ["N", "n"]:
+#                                 housewhile = 1
+#                              elif buyhouseyn in ["Y", "y"]:
+#                                 player.money += -property.housecost
+#                                 property.houses += 1
+#                              else:
+#                                 print("invalid input. Available answers are YES or NO (make sure caps is on).")      
+#                        else:
+#                           housewhile = 1
       if player.user == 1:
          ownsprop = []
          for colorlist in player.proplist:
@@ -881,9 +905,9 @@ class Board:
             mortwhile = 0
             print("Do you want to mortgage some property?")
             while mortwhile == 0:
-               mortyn = input("Type Y or N.")
-               if mortyn == "Y":
-                  mortthis = input("Please type the name of the property you own that you would like to mortgage.")
+               mortyn = raw_input("Type Y or N.")
+               if mortyn in ["Y", "y"]:
+                  mortthis = raw_input("Please type the name of the property you own that you would like to mortgage.")
                   for colorlist in player.proplist:
                      for prop in colorlist:
                         if isinstance(prop,Property):
@@ -897,23 +921,23 @@ class Board:
                            player.money += space.mortgage
                   print("would you like to mortgage some additional property?")
                      
-               elif mortyn == "N":
+               elif mortyn in ["N", "n"]:
                   mortwhile = 1
                else:
                   print("invalid input. Available answers are YES or NO (make sure caps is on).") 
 
 def main():
-   print("                                                                           ")
-   print("  Welcome To      ____   _    _    ____   _____    ____   ___    __    __  ")
-   print("       /\  /\    /    \  |\  | |  /    \  | /\ |  /    \  | |    \ \  / /  ")
-   print("      /  \/  \   I /\ I  | \ | |  I /\ I  | \/_|  I /\ I  | |     \ \/ /   ")
-   print("     / /\__/\ \  I \/ I  | |\| |  I \/ I  | /     I \/ I  | |___   |  |    ")
-   print("    /_/      \_\ \____/  |_| \_|  \____/  |/      \____/  |_____|  |__|    ")
-   print("                                                                           ")
-   print("                      A PYTHON SIMULATION OF MONOPOLY                      ")
-   print("                          copyright Milton Bradley                         ")
-   print("                                                                           ")
-   print("                                                                           ")
+   print("                                                                         ")
+   print(" Welcome To      ____   _    _    ____   _____    ____   ___    __    __ ")
+   print("      /\  /\    /    \  |\  | |  /    \  | /\ |  /    \  | |    \ \  / / ")
+   print("     /  \/  \   | /\ |  | \ | |  I /\ I  | \/_|  I /\ I  | |     \ \/ /  ")
+   print("    / /\__/\ \  | \/ |  | |\| |  I \/ I  | /     I \/ I  | |___   |  |   ")
+   print("   /_/      \_\ \____/  |_| \_|  \____/  |/      \____/  |_____|  |__|   ")
+   print("                                                                         ")
+   print("                     A PYTHON SIMULATION OF MONOPOLY                     ")
+   print("                         copyright Milton Bradley                        ")
+   print("                                                                         ")
+
    firstwhile = 0
    while firstwhile == 0:
       print("        Please enter the number of players you want to play against.")
@@ -922,7 +946,7 @@ def main():
          firstwhile = 1
       else:
          print("Invalid input. Please select one or more players to play against.  ")
-   playname = str(input("PLEASE ENTER YOUR GAMEPIECE NAME: "))
+   playname = str(raw_input("PLEASE ENTER YOUR GAMEPIECE NAME: "))
    gameboard = Board(numplay,playname)
    playgame = 1
    while playgame == 1:
